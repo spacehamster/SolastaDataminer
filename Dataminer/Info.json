@@ -1,0 +1,9 @@
+﻿{
+	"Id": "Dataminer",
+	"DisplayName": "Dataminer",
+	"Author": "spacehamster",
+	"Version": "1.0.0",
+	"ManagerVersion": "0.22.13",
+	"AssemblyName": "Dataminer.dll",
+	"EntryMethod": "Dataminer.Main.Load"
+}
