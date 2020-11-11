@@ -83,8 +83,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataminerConstractResolver.cs" />
-    <Compile Include="JsonUtil.cs" />
+    <Compile Include="Json\DataminerConstractResolver.cs" />
+    <Compile Include="Json\DefinitionConverter.cs" />
+    <Compile Include="Json\DefinitionReferenceConverter.cs" />
+    <Compile Include="Json\JsonUtil.cs" />
+    <Compile Include="Json\PushValue.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Exporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

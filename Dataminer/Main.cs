@@ -34,10 +34,13 @@ namespace Dataminer
             {
                 Exporter.Export();
             }
-        }
-        static void TestStackTrace()
-        {
-            Log(Environment.StackTrace);
+#if DEBUG
+            if (GUILayout.Button("Test Export"))
+            {
+                JsonUtil.Dump(DatabaseRepository.GetDatabase<CharacterClassDefinition>().GetElement("Rogue"),
+                    "Dump/RogueTest.json");
+            }
+#endif
         }
     }
 }
