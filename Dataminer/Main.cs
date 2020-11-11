@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityModManagerNet;
 
 namespace Dataminer
@@ -33,6 +34,10 @@ namespace Dataminer
             {
                 Exporter.Export();
             }
+        }
+        static void TestStackTrace()
+        {
+            Log(Environment.StackTrace);
         }
     }
 }

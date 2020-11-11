@@ -28,18 +28,22 @@ namespace Dataminer
             {
                 sw.WriteLine("{0}\t{1}\t{2}",
                     "Name", "Type", "GUID");
-                foreach (object db in databases.Values)
+                foreach (IEnumerable<BaseDefinition> db in databases.Values)
                 {
-                    var elements = (IList)AccessTools.Method(db.GetType(), "GetAllElements")
-                        .Invoke(db, new object[] { });
-                    foreach(BaseDefinition value in elements)
+                    foreach (BaseDefinition value in db)
                     {
                         sw.WriteLine("{0}\t{1}\t{2}",
                             value.Name, value.GetType().FullName, value.GUID);
                     }
                 }
             }
-
+            foreach (IEnumerable<BaseDefinition> db in databases.Values)
+            {
+                foreach (BaseDefinition value in db)
+                {
+                    JsonUtil.Dump(value, $"Dump/{value.GetType().Name}/{value.name}.{value.GUID}.json");
+                }
+            }
         }
     }
 }
