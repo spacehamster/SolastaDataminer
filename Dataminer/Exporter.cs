@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Dataminer
 {
@@ -15,7 +16,8 @@ namespace Dataminer
             {
                 Directory.CreateDirectory("Dump");
             }
-            var databases = (Dictionary<Type, object>)AccessTools.Field(typeof(DatabaseRepository), "databases")
+            var databases = (Dictionary<Type, object>)AccessTools
+                .Field(typeof(DatabaseRepository), "databases")
                 .GetValue(null);
             using (var sw = new StreamWriter("Dump/Types.txt"))
             {
@@ -26,22 +28,27 @@ namespace Dataminer
             }
             using (var sw = new StreamWriter("Dump/Assets.txt"))
             {
-                sw.WriteLine("{0}\t{1}\t{2}",
-                    "Name", "Type", "GUID");
+                sw.WriteLine("{0}\t{1}\t{2}\t{3}",
+                    "Name", "Type", "DatabaseType", "GUID");
                 foreach (IEnumerable<BaseDefinition> db in databases.Values)
                 {
+                    Type dbType = db.GetType().GetGenericArguments()[0];
                     foreach (BaseDefinition value in db)
                     {
-                        sw.WriteLine("{0}\t{1}\t{2}",
-                            value.Name, value.GetType().FullName, value.GUID);
+                        sw.WriteLine("{0}\t{1}\t{2}\t{3}",
+                            value.Name, value.GetType().FullName, dbType.FullName, value.GUID);
                     }
                 }
             }
             foreach (IEnumerable<BaseDefinition> db in databases.Values)
             {
+                Type dbType = db.GetType().GetGenericArguments()[0];
+                bool hasSubtypes = db.Any(x => x.GetType() != dbType);
                 foreach (BaseDefinition value in db)
                 {
-                    JsonUtil.Dump(value, $"Dump/{value.GetType().Name}/{value.name}.{value.GUID}.json");
+                    var subfolder = value.GetType().Name;
+                    if (hasSubtypes) subfolder = $"{dbType.FullName}/{subfolder}";
+                    JsonUtil.Dump(value, $"Dump/{subfolder}/{value.name}.{value.GUID}.json");
                 }
             }
         }
