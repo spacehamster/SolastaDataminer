@@ -34,6 +34,10 @@ namespace Dataminer
             {
                 Exporter.Export();
             }
+            if (GUILayout.Button("Export Strings"))
+            {
+                Exporter.ExportStrings();
+            }
 #if DEBUG
             if (GUILayout.Button("Test Export"))
             {
