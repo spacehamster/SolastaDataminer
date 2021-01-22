@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,6 +36,7 @@ namespace Dataminer
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
                 TypeNameHandling = TypeNameHandling.Objects
             };
+            RefJsonSerializerSettings.Converters.Add(new StringEnumConverter());
             return RefJsonSerializerSettings;
         }
         public static void Dump(BaseDefinition definition, string path, JsonSerializerSettings settings = null)

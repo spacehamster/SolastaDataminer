@@ -43,6 +43,8 @@ namespace Dataminer
             {
                 JsonUtil.Dump(DatabaseRepository.GetDatabase<CharacterClassDefinition>().GetElement("Rogue"),
                     "Dump/RogueTest.json");
+                JsonUtil.Dump(DatabaseRepository.GetDatabase<ItemDefinition>().GetElement("Longsword+1"),
+                    "Dump/LongswordPlus1.json");
             }
 #endif
         }
