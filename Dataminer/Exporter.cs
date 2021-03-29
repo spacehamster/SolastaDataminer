@@ -19,9 +19,10 @@ namespace Dataminer
             var databases = (Dictionary<Type, object>)AccessTools
                 .Field(typeof(DatabaseRepository), "databases")
                 .GetValue(null);
+            var definitionDatabaseTypeMap = new Dictionary<BaseDefinition, Type>();
             using (var sw = new StreamWriter("Dump/Types.txt"))
             {
-                foreach (var type in databases.Keys)
+                foreach (var type in databases.Keys.OrderBy(t => t.Name))
                 {
                     sw.WriteLine($"{type.FullName}");
                 }
@@ -30,26 +31,29 @@ namespace Dataminer
             {
                 sw.WriteLine("{0}\t{1}\t{2}\t{3}",
                     "Name", "Type", "DatabaseType", "GUID");
-                foreach (IEnumerable<BaseDefinition> db in databases.Values)
+                foreach (IEnumerable<BaseDefinition> db in databases.Values
+                    .OrderBy(db => db.GetType().GetGenericArguments()[0].Name))
                 {
                     Type dbType = db.GetType().GetGenericArguments()[0];
-                    foreach (BaseDefinition value in db)
+                    foreach (BaseDefinition value in db.Cast<BaseDefinition>().OrderBy(def => def.Name))
                     {
                         sw.WriteLine("{0}\t{1}\t{2}\t{3}",
                             value.Name, value.GetType().FullName, dbType.FullName, value.GUID);
+                        if (!definitionDatabaseTypeMap.ContainsKey(value) || 
+                            dbType.IsSubclassOf(definitionDatabaseTypeMap[value]))
+                        {
+                            definitionDatabaseTypeMap[value] = dbType;
+                        }
                     }
                 }
             }
-            foreach (IEnumerable<BaseDefinition> db in databases.Values)
+            foreach(var kv in definitionDatabaseTypeMap)
             {
-                Type dbType = db.GetType().GetGenericArguments()[0];
-                bool hasSubtypes = db.Any(x => x.GetType() != dbType);
-                foreach (BaseDefinition value in db)
-                {
-                    var subfolder = value.GetType().Name;
-                    if (hasSubtypes) subfolder = $"{dbType.FullName}/{subfolder}";
-                    JsonUtil.Dump(value, $"Dump/{subfolder}/{value.name}.{value.GUID}.json");
-                }
+                var dbType = kv.Value;
+                var value = kv.Key;
+                var subfolder = value.GetType().Name;
+                if (value.GetType() != dbType) subfolder = $"{dbType.FullName}/{subfolder}";
+                JsonUtil.Dump(value, $"Dump/{subfolder}/{value.Name}.{value.GUID}.json");
             }
         }
         internal static void ExportStrings()
